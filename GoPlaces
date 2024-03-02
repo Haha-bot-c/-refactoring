@@ -1,0 +1,40 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class GoPlaces : MonoBehaviour
+{
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private Transform allPlacesPoint;
+
+    private Transform[] arrayPlaces;
+    private int currentPlaceIndex;
+
+    void Start()
+    {
+        arrayPlaces = new Transform[allPlacesPoint.childCount];
+
+        for (int i = 0; i < allPlacesPoint.childCount; i++)
+            arrayPlaces[i] = allPlacesPoint.GetChild(i).GetComponent<Transform>();
+    }
+
+    void Update()
+    {
+        Transform currentPlace = arrayPlaces[currentPlaceIndex];
+        transform.position = Vector3.MoveTowards(transform.position, currentPlace.position, moveSpeed * Time.deltaTime);
+
+        if (transform.position == currentPlace.position)
+            NextPlace();
+    }
+
+    void NextPlace()
+    {
+        currentPlaceIndex++;
+
+        if (currentPlaceIndex == arrayPlaces.Length)
+            currentPlaceIndex = 0;
+
+        Transform nextPlace = arrayPlaces[currentPlaceIndex];
+        transform.forward = nextPlace.position - transform.position;
+    }
+}
