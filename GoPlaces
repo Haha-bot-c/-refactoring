@@ -1,40 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
+// Этот скрипт используется для перемещения игрока между различными точками на сцене.
 using UnityEngine;
 
 public class GoPlaces : MonoBehaviour
 {
-    [SerializeField] private float moveSpeed;
-    [SerializeField] private Transform allPlacesPoint;
+    // Скорость передвижения игрока.
+    [SerializeField] private float _moveSpeed = 10;
+    
+    // Массив трансформаций точек, в которые игрок может переместиться.
+    [SerializeField] private Transform[] _arrayPlaces;
 
-    private Transform[] arrayPlaces;
-    private int currentPlaceIndex;
-
-    void Start()
-    {
-        arrayPlaces = new Transform[allPlacesPoint.childCount];
-
-        for (int i = 0; i < allPlacesPoint.childCount; i++)
-            arrayPlaces[i] = allPlacesPoint.GetChild(i).GetComponent<Transform>();
-    }
+    // Индекс текущей точки, к которой движется игрок.
+    private int _currentPlaceIndex = 0;
 
     void Update()
     {
-        Transform currentPlace = arrayPlaces[currentPlaceIndex];
-        transform.position = Vector3.MoveTowards(transform.position, currentPlace.position, moveSpeed * Time.deltaTime);
+        // Получить текущую точку, к которой движется игрок.
+        Transform currentPlace = _arrayPlaces[_currentPlaceIndex];
 
+        // Переместить игрока к текущей точке.
+        transform.position = Vector3.MoveTowards(transform.position, currentPlace.position, _moveSpeed * Time.deltaTime);
+
+        // Если игрок достиг текущей точки, переместиться к следующей точке.
         if (transform.position == currentPlace.position)
             NextPlace();
     }
 
     void NextPlace()
     {
-        currentPlaceIndex++;
+        // Увеличить индекс текущей точки.
+        _currentPlaceIndex = (_currentPlaceIndex + 1) % _arrayPlaces.Length;
 
-        if (currentPlaceIndex == arrayPlaces.Length)
-            currentPlaceIndex = 0;
+        // Получить следующую точку, к которой переместится игрок.
+        Transform nextPlace = _arrayPlaces[_currentPlaceIndex];
 
-        Transform nextPlace = arrayPlaces[currentPlaceIndex];
+        // Повернуть игрока лицом к следующей точке.
         transform.forward = nextPlace.position - transform.position;
     }
 }
