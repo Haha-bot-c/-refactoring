@@ -3,34 +3,33 @@ using UnityEngine;
 public class Mover : MonoBehaviour
 {
     [SerializeField] private float _moveSpeed;
-    [SerializeField] private Transform _allPlacesPoint;
+    [SerializeField] private Transform _pathPoints;
 
-    private Transform[] arrayPlaces;
+    private Transform[] _waypoints;
     private int _currentPlaceIndex;
 
     private void Start()
     {
-        arrayPlaces = new Transform[_allPlacesPoint.childCount];
+        _waypoints = new Transform[_pathPoints.childCount];
 
-        for (int i = 0; i < _allPlacesPoint.childCount; i++)
-            arrayPlaces[i] = _allPlacesPoint.GetChild(i).GetComponent<Transform>();
+        for (int i = 0; i < _waypoints.Length; i++)
+            _waypoints[i] = _pathPoints.GetChild(i);
+
     }
 
     private void Update()
     {
-        Transform pointByNumberInArray = arrayPlaces[_currentPlaceIndex];
+        Transform pointByNumberInArray = _waypoints[_currentPlaceIndex];
         transform.position = Vector3.MoveTowards(transform.position, pointByNumberInArray.position, _moveSpeed * Time.deltaTime);
 
         if (transform.position == pointByNumberInArray.position)
-            NextPlaceTakerLogic();
+            NextPlaceTaker();
     }
 
-    private Vector3 NextPlaceTakerLogic()
+    private void NextPlaceTaker()
     {
-        _currentPlaceIndex = (++_currentPlaceIndex) % arrayPlaces.Length;
-        Vector3 thisPointVector = arrayPlaces[_currentPlaceIndex].transform.position;
+        _currentPlaceIndex = (++_currentPlaceIndex) % _waypoints.Length;
+        Vector3 thisPointVector = _waypoints[_currentPlaceIndex].transform.position;
         transform.forward = thisPointVector - transform.position;
-
-        return thisPointVector;
     }
 }
