@@ -1,0 +1,36 @@
+using UnityEngine;
+
+public class Mover : MonoBehaviour
+{
+    [SerializeField] private float _moveSpeed;
+    [SerializeField] private Transform _allPlacesPoint;
+
+    private Transform[] arrayPlaces;
+    private int _currentPlaceIndex;
+
+    private void Start()
+    {
+        arrayPlaces = new Transform[_allPlacesPoint.childCount];
+
+        for (int i = 0; i < _allPlacesPoint.childCount; i++)
+            arrayPlaces[i] = _allPlacesPoint.GetChild(i).GetComponent<Transform>();
+    }
+
+    private void Update()
+    {
+        Transform pointByNumberInArray = arrayPlaces[_currentPlaceIndex];
+        transform.position = Vector3.MoveTowards(transform.position, pointByNumberInArray.position, _moveSpeed * Time.deltaTime);
+
+        if (transform.position == pointByNumberInArray.position)
+            NextPlaceTakerLogic();
+    }
+
+    private Vector3 NextPlaceTakerLogic()
+    {
+        _currentPlaceIndex = (++_currentPlaceIndex) % arrayPlaces.Length;
+        Vector3 thisPointVector = arrayPlaces[_currentPlaceIndex].transform.position;
+        transform.forward = thisPointVector - transform.position;
+
+        return thisPointVector;
+    }
+}
